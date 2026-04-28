@@ -1,0 +1,9 @@
+# .gitignore
+adguard/conf/*
+adguard/work/*
+tailscale/state/*
+!adguard/conf/.gitkeep
+!adguard/work/.gitkeep
+!tailscale/state/.gitkeep
+*.log
+!*.log
