@@ -14,12 +14,9 @@ I built this project to solve three main problems that standard home routers can
 
 ### Key Features
 
-**Network-Wide Filtering:** Full control to block ads, apps, websites, trackers, and malware on every device in your home network.
-
-**Recursive DNS:** Use Unbound to resolve queries directly from Root Servers for ultimate privacy.
-
-**Global VPN (Exit Node):** Securely browse the web as if you are sitting in your living room, even when traveling abroad.
-
+**Network-Wide Filtering:** Full control to block ads, apps, websites, trackers, and malware on every device in your home network. <br>
+**Recursive DNS:** Use Unbound to resolve queries directly from Root Servers for ultimate privacy.<br>
+**Global VPN (Exit Node):** Securely browse the web as if you are sitting in your living room, even when traveling abroad.<br>
 **Service Control:** Easily block or limit access to social media (TikTok, Instagram, etc.) and other services via a clean UI.
 
 ## 🏗️ Architecture
@@ -33,6 +30,7 @@ graph LR;
     C --> A;
 ```
 
+> [!NOTE]
 > **Note:** Tailscale provides an encrypted tunnel for remote devices to connect to the home network and use this stack securely from anywhere.
 
 ## 📋 Prerequisites
@@ -58,8 +56,9 @@ First, download and install the official imaging tool for your operating system:
 #### 2. Prepare the MicroSD Card
 
 - Connect your MicroSD card to your computer.
-  > [!CAUTION]
-  > **Warning:** Ensure the card is empty or backed up, as the flashing process will **permanently erase** all existing data on the drive.
+  
+> [!CAUTION]
+> **Warning:** Ensure the card is empty or backed up, as the flashing process will **permanently erase** all existing data on the drive.
 
 #### 3. Configure the Imager
 
@@ -85,6 +84,8 @@ Open the Raspberry Pi Imager and follow these steps:
 Once you have saved your customization settings, click **YES** to start the flashing process.<br>
 Wait for the flashing process to finish and for the "Write Successful" confirmation before removing the card. <br>
 Insert the MicroSD card into your Raspberry Pi and connect the power supply to begin the initial boot.
+
+<br>
 
 ### 🐳 Step 2: Docker Infrastructure
 
@@ -114,7 +115,9 @@ sudo usermod -aG docker $USER
 docker --version && docker compose version
 ```
 
-## 🚀 Step 3: Deploying the Hub
+<br>
+
+### 🚀 Step 3: Deploying the Hub
 
 Now that Docker is ready, we will pull the project files from GitHub to the Raspberry Pi.
 
@@ -137,6 +140,8 @@ Start the services in detached mode (running in the background):
 ```bash
 sudo docker-compose up -d
 ```
+
+<br>
 
 ### 🛡️ Step 4: Configuring the AdGuard
 
@@ -184,15 +189,12 @@ But it's important to do your **own research**.
 > online programs from your network.
 
 #### Connecting AdGuard to your Network:
-
 To add AdGuard to your home network, we have 3 steps:
 
 #### Enter the router management UI:
 
 Navigate to your router's address in the browser.
-
 Usually it's **192.168.1.1**, but sometimes it can be **192.168.0.1** or **10.0.0.1**.
-
 If it's none of the above, you can look at the Network settings on any device connected to the same network and look for the **Default Gateway**; this is your router's IP address.
 
 #### Assigning a Static IP to your Pi:
