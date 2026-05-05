@@ -1,6 +1,4 @@
 # docker-compose.yml
-version: "3.8"
-
 services:
   # AdGuard Home: The primary DNS filter
   adguardhome:
@@ -16,6 +14,7 @@ services:
   unbound:
     image: mvance/unbound:latest
     container_name: unbound
+    platform: linux/arm64/v8 # Force ARM64 architecture
     restart: unless-stopped
     network_mode: host # Required for proper network visibility on Pi
     volumes:
