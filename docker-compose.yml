@@ -12,14 +12,14 @@ services:
 
   # Unbound: The recursive DNS resolver for privacy
   unbound:
-    image: mvance/unbound:latest
+    image: klutchell/unbound:latest
     container_name: unbound
     platform: linux/arm64/v8 # Force ARM64 architecture
     restart: unless-stopped
     network_mode: host # Required for proper network visibility on Pi
     volumes:
-      - ./unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
-      - ./unbound/root.hints:/opt/unbound/etc/unbound/root.hints:ro
+      - ./unbound/unbound.conf:/etc/unbound/unbound.conf:ro
+      - ./unbound/root.hints:/etc/unbound/root.hints:ro
   # # Tailscale: Secure remote access & Exit Node
   # tailscale:
   #   image: tailscale/tailscale:latest
