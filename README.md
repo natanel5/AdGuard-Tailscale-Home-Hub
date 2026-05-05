@@ -56,7 +56,7 @@ First, download and install the official imaging tool for your operating system:
 #### 2. Prepare the MicroSD Card
 
 - Connect your MicroSD card to your computer.
-  
+
 > [!CAUTION]
 > **Warning:** Ensure the card is empty or backed up, as the flashing process will **permanently erase** all existing data on the drive.
 
@@ -189,6 +189,7 @@ But it's important to do your **own research**.
 > online programs from your network.
 
 #### Connecting AdGuard to your Network:
+
 To add AdGuard to your home network, we have 3 steps:
 
 #### Enter the router management UI:
@@ -229,3 +230,56 @@ We have 2 choices:
 - **Option 2 - Device-Level Setup:**<br>
   You can go to the **AdGuard management UI** and navigate to the **setup guide** tab, and see the
   instructions on any device.
+
+#### Additional configurations (Not mandatory):
+
+Go to **Settings -> DNS settings** and adjust the following configurations.
+
+On the **DNS Cache Configuration** block:<br>
+
+- **Cache size** - Change the number to **67,108,864** (64MB);<br>
+  Increasing the cache size reduces recursive lookups and improves overall network latency.
+
+- **Optimistic caching** - Enable this to improve performance;<br>
+  This allows AdGuard to serve expired entries from the cache while simultaneously updating them in the background.
+
+On the **DNS server configuration** block:
+
+- **Enable DNSSEC** - Enable for enhanced security;<br>
+  This uses the DNSSEC protocol to verify the authenticity of DNS records and prevent spoofing.
+
+**Custom Filtering Rules:**<br>
+
+Lastly go to **Filters -> Custom filtering rules** and enter these rules. This is where you can manage your own whitelist or blacklist.
+
+```Plaintext
+! Samsung News (Unblock Taboola for Samsung News Feed)
+@@||cdn.taboola.com^$important
+@@||api.taboola.com^$important
+@@||images.taboola.com^$important
+
+! Meta / Instagram (Media & CDN)
+@@||fbcdn.net^$important
+
+! Meta General Domains
+@@||facebook.net^$important
+@@||instagram.net^$important
+```
+
+This is the place you can enter your **own** filtering rules.
+
+> [!NOTE]
+> This is a curated list based on my personal experience with AdGuard Home, and I will update it periodically.
+
+### 🛡️ Step 4: Connecting the Unbound service
+
+Now we can set our second service, **The Unbound service!**
+This service will help us to resolve queries privatly.
+
+```bash
+crontab -e
+```
+
+```bash
+0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO /home/pi_server/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
+```

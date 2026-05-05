@@ -11,18 +11,16 @@ services:
     volumes:
       - ./adguard/conf:/opt/adguardhome/conf
       - ./adguard/work:/opt/adguardhome/work
-  #
-  # # Unbound: The recursive DNS resolver for privacy
-  # unbound:
-  #   image: mvance/unbound:latest
-  #   container_name: unbound
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5335:53/udp"
-  #     - "5335:53/tcp"
-  #   volumes:
-  #     - ./unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf
 
+  # Unbound: The recursive DNS resolver for privacy
+  unbound:
+    image: mvance/unbound:latest
+    container_name: unbound
+    restart: unless-stopped
+    network_mode: host # Required for proper network visibility on Pi
+    volumes:
+      - ./unbound/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
+      - ./unbound/root.hints:/opt/unbound/etc/unbound/root.hints:ro
   # # Tailscale: Secure remote access & Exit Node
   # tailscale:
   #   image: tailscale/tailscale:latest
