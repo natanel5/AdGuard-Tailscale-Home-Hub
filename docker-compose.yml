@@ -18,9 +18,7 @@ services:
     restart: unless-stopped
     network_mode: host # Required for proper network visibility on Pi
     volumes:
-      - ./unbound/unbound.conf:/etc/unbound/unbound.conf:ro
-      - ./unbound/root.hints:/etc/unbound/root.hints:ro
-      - ./unbound/root.key:/etc/unbound/root.key:rw
+      - ./unbound:/etc/unbound:rw
   # # Tailscale: Secure remote access & Exit Node
   # tailscale:
   #   image: tailscale/tailscale:latest
