@@ -20,6 +20,7 @@ services:
     volumes:
       - ./unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       - ./unbound/root.hints:/etc/unbound/root.hints:ro
+      - ./unbound/root.key:/etc/unbound/root.key:rw
   # # Tailscale: Secure remote access & Exit Node
   # tailscale:
   #   image: tailscale/tailscale:latest
