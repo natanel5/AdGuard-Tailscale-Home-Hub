@@ -233,20 +233,13 @@ We have 2 choices:
 
 #### Additional configurations (Not mandatory):
 
-Go to **Settings -> DNS settings** and adjust the following configurations.
-
-On the **DNS Cache Configuration** block:<br>
+Go to **Settings -> DNS settings -> DNS Cache Configuration** and adjust the following configurations:
 
 - **Cache size** - Change the number to **67,108,864** (64MB);<br>
   Increasing the cache size reduces recursive lookups and improves overall network latency.
 
 - **Optimistic caching** - Enable this to improve performance;<br>
   This allows AdGuard to serve expired entries from the cache while simultaneously updating them in the background.
-
-On the **DNS server configuration** block:
-
-- **Enable DNSSEC** - Enable for enhanced security;<br>
-  This uses the DNSSEC protocol to verify the authenticity of DNS records and prevent spoofing.
 
 **Custom Filtering Rules:**<br>
 
@@ -271,15 +264,77 @@ This is the place you can enter your **own** filtering rules.
 > [!NOTE]
 > This is a curated list based on my personal experience with AdGuard Home, and I will update it periodically.
 
-### 🛡️ Step 4: Connecting the Unbound service
+### 🛡️ Step 4: Configuring the Unbound service
 
 Now we can set our second service, **The Unbound service!**
-This service will help us to resolve queries privatly.
+This service will help us to resolve queries privately and securely.
+
+The Unbound service can resolve queries with the official **ICANN** DNS servers. That can give us more privacy as our queries don't go through third parties like your ISP or google.
+
+To get the ICANN DNS server information we run this command that takes the info from the official site and restart the service:
+
+```bash
+wget https://www.internic.net/domain/named.root -qO /home/pi_server/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
+```
+
+Next we make a crontab that every 6 months refresh the root.hints file and restart unbound.
 
 ```bash
 crontab -e
 ```
 
+Choose the /bin/nano and paste the following code at the end of the file:
+
 ```bash
 0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO /home/pi_server/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
+
+Sets up the master security key so Unbound can prove that website addresses are real and haven't been faked
+
+```bash
+docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutchell/unbound:latest -a /etc/unbound/root.key
+```
+
+To allow the Unbound service to write the root.key file we give read & write permission to the root.key file and full permissions to the unbound directory.
+
+```bash
+sudo chmod 666 ./unbound/root.key
+```
+
+```bash
+sudo chmod 777 ./unbound
+```
+
+Now the server is up and you can check it with the dig tool.
+
+Update and download the tool
+
+```bash
+sudo apt update && sudo apt install dnsutils -y
+```
+
+Now you can check if it's working.
+
+```bash
+dig google.com @127.0.0.1 -p 5335
+```
+
+If you get **status: NOERROR** you are good to go.
+
+Now the next step is to direct the AdGuard to use the Unbound service.
+
+Go to the AdGuard configuration page and go to **Settings -> DNS settings -> Upstream DNS servers** and erase all the default dns servers and put only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
+
+Next we will fail-proofing our system so if the unbound service is down we redirect the queries to more reliable servers like Google, Cloudflare, Quad9 etc.
+
+On the same block go to **Fallback DNS servers** and write one of the following options.
+
+- 1.1.1.1 - Cloudflare DNS for fast, reliable, secure and private.
+- 8.8.8.8 - Google DNS for fast, reliable and secure.
+- 9.9.9.9 - Quad9 DNS for fast, reliable, secure and even more private.
+- any other DNS server you want.
+
+Last go to **Upstream timeout** setting that allow you to choose how much time it takes for the AdGuard to redirect the queries to the fallback DNS servers. The default is 10 seconds, but my recommendation is 3-5 seconds and hit apply.
+
+> [!NOTE]
+> You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
