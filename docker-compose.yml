@@ -21,18 +21,22 @@ services:
       - ./unbound:/etc/unbound:rw
       - ./unbound/unbound.conf:/etc/unbound/unbound.conf:ro
       - ./unbound/root.hints:/etc/unbound/root.hints:ro
-  # # Tailscale: Secure remote access & Exit Node
-  # tailscale:
-  #   image: tailscale/tailscale:latest
-  #   container_name: tailscale
-  #   restart: unless-stopped
-  #   network_mode: host
-  #   cap_add:
-  #     - NET_ADMIN
-  #     - SYS_MODULE
-  #   volumes:
-  #     - ./tailscale/state:/var/lib/tailscale
-  #     - /dev/net/tun:/dev/net/tun
-  #   environment:
-  #     - TS_STATE_DIR=/var/lib/tailscale
-  #     - TS_USERSPACE=false
+
+  # Tailscale: Secure remote access & Exit Node
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    hostname: tailscale-pi
+    restart: unless-stopped
+    network_mode: host # Essential for Exit Node and Routing performance
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_MODULE
+    volumes:
+      - ./tailscale/state:/var/lib/tailscale:rw # Persistent state storage
+      - /dev/net/tun:/dev/net/tun # Access to the host TUN device
+    environment:
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false # Use kernel WireGuard for better performance
+      - TS_EXTRA_ARGS=--advertise-exit-node # Automatically advertise as an exit node
