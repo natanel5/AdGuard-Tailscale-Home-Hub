@@ -6,9 +6,9 @@
 
 I built this project to solve three main problems that standard home routers can't handle:
 
-**Network-Wide Ad Blocking:** Instead of installing ad-blockers on every phone, laptop, and other devices, AdGuard Home handles it at the source. If a device is on your WiFi, the ads are gone.
+**Network-Wide Ad Blocking:** Instead of installing ad-blockers on each individual device, AdGuard Home handles it at the source. If it's on your network, it's ad-free. Simple as that.
 
-**Privacy & Tracking:** By default, your ISP (Internet Service Provider) can see every website you visit through their DNS. This stack uses Unbound to bypass them and talk directly to the source.
+**Privacy & Tracking:** By default, your ISP (Internet Service Provider) can see every website you visit through their DNS. This stack uses Unbound to bypass ISP resolvers and query root servers directly.
 
 **Secure Remote Access:** When traveling, you often need a secure connection or your home's IP address to access local services. Tailscale creates an encrypted tunnel back to your Pi, acting as your own personal VPN (Exit Node).
 
@@ -27,7 +27,8 @@ The traffic flows as follows:
 graph LR;
     A(["Client requests a domain (website/app)."]) --> B(["AdGuard Home checks if <br/>it should be blocked."]);
     B --> C(["If allowed,<br/> Unbound resolves the <br/>IP recursively"]);
-    C --> A;
+    C --> D(["Success! Website loads"]);
+    D --> A
 ```
 
 > [!NOTE]
@@ -40,7 +41,6 @@ Before you begin, ensure you have the following:
 - **Hardware:** Raspberry Pi (3B+, 4, or 5 recommended) with 1GB+ RAM.
 - **Storage:** 16GB+ MicroSD card.
 - **OS:** Raspberry Pi OS Lite (Debian 12) 64-bit.
-- **Network:** A static IP assigned to your Pi.
 
 ## 💻 Installation
 
@@ -72,7 +72,7 @@ Open the Raspberry Pi Imager and follow these steps:
 - **Hostname:** Set a unique name (e.g., `adguard-hub`). This allows you to connect via `<hostname>.local`.
 - **User:** Create your primary admin username and password.
 - **Wireless LAN:** Configure your WiFi credentials if you are not using a LAN (Ethernet) cable.
-- **Localisation:** Set your time zone and keyboard layout (e.g., `Asia/Jerusalem`).
+- **Localisation:** Set your time zone and keyboard layout (e.g., `America/Chicago`).
 - **Remote Access:** You **MUST** check **Enable SSH** and select **Allow password authentication**.
 - **Raspberry Pi Connect:** Ensure this is set to **OFF** (we will manage the server via SSH and Tailscale).
 
@@ -109,7 +109,7 @@ curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
 sudo usermod -aG docker $USER
 ```
 
-#### 4. Confirm that Docker and Docker Compose are installed and working correctly:
+#### 4. Verify the installation of Docker and Docker Compose:
 
 ```bash
 docker --version && docker compose version
@@ -147,7 +147,7 @@ sudo docker-compose up -d
 
 We are going to set up our first service, **AdGuard Home!**
 
-#### Initial settings
+#### Getting Started with AdGuard
 
 First, open a browser on your computer and navigate to:
 
@@ -264,6 +264,14 @@ This is the place you can enter your **own** filtering rules.
 > [!NOTE]
 > This is a curated list based on my personal experience with AdGuard Home, and I will update it periodically.
 
+The fastest way to refine your filtering rules is by using the **Query Log** feature. This allows you to intercept and manage traffic as it happens:
+
+- **Identify:** Search for specific requests. **Blocked** entries appear in **Red**, while **allowed** ones are **Green** (or have no specific highlight).
+
+- **Action:** Click any query to open the details view, then use the button at the bottom of the window to instantly **Block** or **Unblock** it.
+
+- **Targeted Control:** You can apply these rules globally or restrict them to a **specific client**, The option to target a specific user is available right in the query details window (next to the Block/Unblock button), allowing for different policies across your devices (e.g., stricter rules for IoT devices vs. your personal laptop).
+
 ### 🛡️ Step 4: Configuring the Unbound service
 
 Now we can set our second service, **The Unbound service!**
@@ -274,7 +282,7 @@ The Unbound service can resolve queries with the official **ICANN** DNS servers.
 To get the ICANN DNS server information we run this command that takes the info from the official site and restart the service:
 
 ```bash
-wget https://www.internic.net/domain/named.root -qO /home/pi_server/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
+wget https://www.internic.net/domain/named.root -qO /home/~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
 Next we make a crontab that every 6 months refresh the root.hints file and restart unbound.
@@ -286,10 +294,10 @@ crontab -e
 Choose the /bin/nano and paste the following code at the end of the file:
 
 ```bash
-0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO /home/pi_server/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
+0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
-Sets up the master security key so Unbound can prove that website addresses are real and haven't been faked
+Sets up the master security key so Unbound can validates DNS responses using DNSSEC to prevent spoofing.
 
 ```bash
 docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutchell/unbound:latest -a /etc/unbound/root.key
@@ -298,11 +306,11 @@ docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutc
 To allow the Unbound service to write the root.key file we give read & write permission to the root.key file and full permissions to the unbound directory.
 
 ```bash
-sudo chmod 666 ./unbound/root.key
+sudo chmod 664 ./unbound/root.key
 ```
 
 ```bash
-sudo chmod 777 ./unbound
+sudo chmod 755 ./unbound
 ```
 
 Now the server is up and you can check it with the dig tool.
@@ -338,3 +346,162 @@ Last go to **Upstream timeout** setting that allow you to choose how much time i
 
 > [!NOTE]
 > You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
+
+### 🛡️ Step 5: Configuring Tailscale service
+
+The Final service we will configure is the **Tailscale service!**
+With this service we can enable several key features:
+
+- **Private Exit Node:** Transform your Pi into a dedicated **VPN server**. By routing your traffic through this node, your communication originates from your home network regardless of your actual location. This ensures a secure and private connection, even when using untrusted public Wi-Fi.
+
+- **Global Ad-Blocking:** Route all DNS queries through the Pi to leverage AdGuard and Unbound protections on the go. This ensures your DNS traffic is filtered and private, just as it is at home.
+
+- **Subnet Router:** Securely access local home devices and services from anywhere in the world without exposing them to the public internet.
+
+To begin, we need to add a configuration to the file that allows the system kernel to forward IPv4 and IPv6 traffic between network interfaces:
+
+```bash
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+```
+
+```bash
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+```
+
+This command loads and applies the new kernel settings we created in the previous steps into the active system, without requiring a reboot:
+
+```bash
+sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+```
+
+We need to get auth key so we go to the tailscale.com and create new account when you are inside the **Admin console** go to **Settings** and on the scrollbar go to **keys**, press **Generate auth key** leave the default as is and only check the **pre-approved** box.
+After hitting **Generate key** copy the key and replace the variable content with your key.
+
+Set your Auth Key as an environment variable:
+
+```bash
+ export TS_AUTHKEY=tskey-auth-your-key-here
+```
+
+Open the **Docker-compose.yml**:
+
+```bash
+sudo nano docker-compose.yml
+```
+
+Change the **TS_ROUTES** to your subnet range (if your pi ip is 192.168.1.XXX so your subnet range is 192.168.1.0/24 and if your 10.0.0.XXX so your subnet range is 10.0.0.0/24 and so...).
+
+Start the container (it will automatically use the key):
+
+```bash
+docker compose up -d
+```
+
+After authentication open the **Admin console** and make the following changes:
+
+Make your PI **Exit Node**:
+Go to Machines and look for your machine name **tailscale-pi** press on the 3 dots and press **Edit route settings** and make the option **Use as exit node** checked. For you to access the home **private_ip's** we need to enable the **Subnet Router** on the same place check the box with your subnet.
+
+Next go to **DNS** and under **Nameservers** on **Global nameservers** press **Add nameserver** press **Custom** and add your pi tailnet ip to the Nameserver slot.
+
+This is an easy way to get the **pi tailnet ip**
+
+```bash
+docker exec tailscale tailscale ip -4
+```
+
+Check also the **Use with exit node** option.
+
+Next, ensure **Override DNS servers** is checked.
+
+#### Network Performance Optimization (Recommended for Pi)
+
+Update the package list and installs ethtool – a utility used to modify low-level network interface settings at the hardware level:
+
+```bash
+sudo apt update && sudo apt install ethtool -y
+```
+
+Creates a system service that configures the network interface (eth0) to operate optimally for VPN traffic by enabling rx-udp-gro-forwarding:
+
+> [!NOTE]
+> If you are using a Raspberry Pi 5 or a different OS version, your interface name might be end0 instead of eth0. You can check your interface name by running **ip link**.
+
+```bash
+sudo nano /etc/systemd/system/tailscale-optimize.service
+```
+
+```bash
+[Unit]
+Description=Tailscale Performance Optimization
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Press **CTRL S** to save and **CTRL X** to exit.
+
+Enables the new service to run immediately and ensures it starts automatically whenever the Pi reboots:
+
+```bash
+sudo systemctl enable --now tailscale-optimize.service
+```
+
+These commands configure NAT masquerading and permit bidirectional packet forwarding between the Tailscale interface and the internet, enabling the Raspberry Pi to function as a secure Exit Node:
+
+```bash
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+```
+
+```bash
+sudo iptables -A FORWARD -i tailscale0 -j ACCEPT
+```
+
+```bash
+sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+```
+
+Installs a utility to save the current firewall rules, ensuring the Exit Node functionality persists after a reboot:
+
+```bash
+sudo apt install iptables-persistent -y
+```
+
+choose **yes** twice.
+
+> [!TIP]
+> **Optional:**
+> Go to the **Tailscale Admin Console -> Machines** and pressing again on the 3 dots next to the PI name and press **Disable Key Expiry**. This make sure you dont need to reconnect your PI again every 180 days.
+
+#### Optional Settings:
+
+**Device Approval:**
+This is another layer of protection so every time a new machine added the admin have to accept the mechine.
+To add this go to **Settings -> Device management -> Device Approval** and toggle on the **Manually approve new devices**.
+
+---
+
+## 🏁 Final Words
+
+**That's it! Congratulations!** 🥳
+You now have a fully functional, secure, and ad-free network flow. Your privacy is back in your hands, and your home network is accessible from anywhere in the world.
+
+If you found this project helpful, feel free to ⭐ **star the repository** and share it with others!
+
+## 🤝 Contributing & Support
+
+Found a bug? Have a cool idea for a new feature?  
+Feel free to open an **Issue** or submit a **Pull Request**. Your feedback and contributions are what make this project better for everyone!
+
+- **Bugs & Feature Requests:** Report them in the [Issues](https://github.com/natanel5/AdGuard-Tailscale-Home-Hub/issues) section.
+- **Custom Rules:** If you have useful filtering rules for specific regions or devices, I'd love to see them!
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
