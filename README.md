@@ -112,6 +112,8 @@ Once you have saved your customization settings, click **YES** to start the flas
 Wait for the flashing process to finish and for the "Write Successful" confirmation before removing the card. <br>
 Insert the MicroSD card into your Raspberry Pi and connect the power supply to begin the initial boot.
 
+<br>
+
 <div align="center">
 
 ### 🐳 Step 2: Docker Infrastructure
@@ -144,6 +146,8 @@ sudo usermod -aG docker $USER
 docker --version && docker compose version
 ```
 
+<br>
+
 <div align="center">
 
 ### 🚀 Step 3: Deploying the Hub
@@ -173,6 +177,8 @@ Start the services in detached mode (running in the background):
 ```bash
 sudo docker-compose up -d
 ```
+
+<br>
 
 <div align="center">
 
@@ -307,6 +313,8 @@ Go to **Settings -> DNS settings -> DNS Cache Configuration** and adjust the fol
 - **Optimistic caching** - Enable this to improve performance;<br>
   This allows AdGuard to serve expired entries from the cache while simultaneously updating them in the background.
 
+<br>
+
 <div align="center">
 
 ### 🔗 Step 5: Configuring the Unbound service
@@ -394,6 +402,8 @@ The default is 10 seconds, but my recommendation is 3-5 seconds. Choose and pres
 
 > [!NOTE]
 > You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
+
+<br>
 
 <div align="center">
 
@@ -551,6 +561,8 @@ Next, ensure **Override DNS servers** is **checked**.
 **Device Approval:**
 This is another layer of protection, so every time a new machine is added, the **admin** has to accept the machine.
 To add this, go to **Settings -> Device management -> Device Approval** and toggle **on** the **Manually approve new devices**.
+
+<br>
 
 <div align="center">
 
