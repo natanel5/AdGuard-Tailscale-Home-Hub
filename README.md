@@ -1,8 +1,16 @@
+<div align="center">
+
 # 🚀 AdGuard & Tailscale Home Hub 🛡️
+
+</div>
 
 **Ad blocker, private DNS server, and secure remote access gateway.** This project turns your Raspberry Pi into a central hub that cleans your internet from ads and lets you connect back home securely from any device, anywhere.
 
+<div align="center">
+
 ## 🌟 Overview
+
+</div>
 
 I built this project to solve three main problems that standard home routers can't handle:
 
@@ -19,10 +27,15 @@ I built this project to solve three main problems that standard home routers can
 **Global VPN (Exit Node):** Securely browse the web as if you are sitting in your living room, even when traveling abroad.<br>
 **Service Control:** Easily block or limit access to social media (TikTok, Instagram, etc.) and other services via a clean UI.
 
+<div align="center">
+
 ## 🏗️ Architecture
 
-The traffic flows as follows:
+</div>
 
+The traffic flows as follows:
+<div align="center">
+    
 ```mermaid
 graph LR;
     A(["Client requests a domain (website/app)."]) --> B(["AdGuard Home checks if <br/>it should be blocked."]);
@@ -31,10 +44,16 @@ graph LR;
     D --> A
 ```
 
+</div>
+
 > [!NOTE]
 > **Note:** Tailscale provides an encrypted tunnel for remote devices to connect to the home network and use this stack securely from anywhere.
 
+<div align="center">
+
 ## 📋 Prerequisites
+
+</div>
 
 Before you begin, ensure you have the following:
 
@@ -42,9 +61,17 @@ Before you begin, ensure you have the following:
 - **Storage:** 16GB+ MicroSD card.
 - **OS:** Raspberry Pi OS Lite (Debian 12) 64-bit.
 
+<div align="center">
+
 ## 💻 Installation
 
+</div>
+
+<div align="center">
+
 ### 🛠️ Step 1: Operating System Setup
+
+</div>
 
 To ensure a lightweight and stable environment, we use **Raspberry Pi OS Lite (64-bit)**. This version lacks a desktop interface, which saves system resources for our Docker services.
 
@@ -85,9 +112,11 @@ Once you have saved your customization settings, click **YES** to start the flas
 Wait for the flashing process to finish and for the "Write Successful" confirmation before removing the card. <br>
 Insert the MicroSD card into your Raspberry Pi and connect the power supply to begin the initial boot.
 
-<br>
+<div align="center">
 
 ### 🐳 Step 2: Docker Infrastructure
+
+</div>
 
 To run our services in an isolated environment, we need to install Docker and Docker Compose.
 
@@ -115,9 +144,11 @@ sudo usermod -aG docker $USER
 docker --version && docker compose version
 ```
 
-<br>
+<div align="center">
 
 ### 🚀 Step 3: Deploying the Hub
+
+</div>
 
 Now that Docker is ready, we will pull the project files from GitHub to the Raspberry Pi.
 
@@ -143,9 +174,11 @@ Start the services in detached mode (running in the background):
 sudo docker-compose up -d
 ```
 
-<br>
+<div align="center">
 
 ### 🛡️ Step 4: Configuring the AdGuard
+
+</div>
 
 We are going to set up our first service, **AdGuard Home!**
 
@@ -274,9 +307,11 @@ Go to **Settings -> DNS settings -> DNS Cache Configuration** and adjust the fol
 - **Optimistic caching** - Enable this to improve performance;<br>
   This allows AdGuard to serve expired entries from the cache while simultaneously updating them in the background.
 
-<br>
+<div align="center">
 
 ### 🔗 Step 5: Configuring the Unbound service
+
+</div>
 
 Now we can set our second service, **The Unbound service!**<br>
 This service will help us to resolve queries **privately** and **securely**.
@@ -360,9 +395,11 @@ The default is 10 seconds, but my recommendation is 3-5 seconds. Choose and pres
 > [!NOTE]
 > You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
 
-<br>
+<div align="center">
 
 ### 🛜 Step 6: Configuring Tailscale service
+
+</div>
 
 The Final service we will configure is the **Tailscale service!**
 With this service, we can enable several key features:
@@ -515,14 +552,22 @@ Next, ensure **Override DNS servers** is **checked**.
 This is another layer of protection, so every time a new machine is added, the **admin** has to accept the machine.
 To add this, go to **Settings -> Device management -> Device Approval** and toggle **on** the **Manually approve new devices**.
 
+<div align="center">
+
 ## 🏁 Final Words
+
+</div>
 
 **That's it! Congratulations!** 🥳
 You now have a fully functional, secure, and **ad-free** network flow. Your privacy is back in your hands, and your home network is accessible from **anywhere** in the world.
 
 If you found this project helpful, feel free to ⭐ **star the repository** and share it with others!
 
+<div align="center">
+
 ## 🤝 Contributing & Support
+
+</div>
 
 Found a bug? Have a cool idea for a new feature?  
 Feel free to open an **Issue** or submit a **Pull Request**. Your feedback and contributions are what make this project better for everyone!
@@ -530,6 +575,10 @@ Feel free to open an **Issue** or submit a **Pull Request**. Your feedback and c
 - **Bugs & Feature Requests:** Report them in the [Issues](https://github.com/natanel5/AdGuard-Tailscale-Home-Hub/issues) section.
 - **Custom Rules:** If you have useful filtering rules for specific regions or devices, I'd love to see them!
 
+<div align="center">
+
 ## 📄 License
+
+</div>
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
