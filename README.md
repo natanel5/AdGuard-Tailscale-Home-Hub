@@ -380,7 +380,7 @@ After hitting **Generate key** copy the key and replace the variable content wit
 Set your Auth Key as an environment variable:
 
 ```bash
- export TS_AUTHKEY=tskey-auth-your-key-here
+ export TS_AUTHKEY=<YOUR_TAILSCALE_AUTH_KEY>
 ```
 
 Open the **Docker-compose.yml**:
@@ -484,8 +484,6 @@ choose **yes** twice.
 **Device Approval:**
 This is another layer of protection so every time a new machine added the admin have to accept the mechine.
 To add this go to **Settings -> Device management -> Device Approval** and toggle on the **Manually approve new devices**.
-
----
 
 ## 🏁 Final Words
 
