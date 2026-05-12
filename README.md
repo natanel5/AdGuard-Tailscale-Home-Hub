@@ -113,7 +113,7 @@ Open the Raspberry Pi Imager and follow these steps:
 - **User:** Create your primary admin username and password.
 - **Wireless LAN:** Configure your WiFi credentials if you are not using a LAN (Ethernet) cable.
 - **Localisation:** Set your time zone and keyboard layout (e.g., `America/Chicago`).
-- **Remote Access:** You **MUST** check **Enable SSH** and select **Allow password authentication**.
+- **Remote Access:** You **MUST** check **Enable SSH** and select **Use password authentication**.
 - **Raspberry Pi Connect:** Ensure this is set to **OFF** (we will manage the server via SSH and Tailscale).
 
 > [!IMPORTANT]
