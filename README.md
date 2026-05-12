@@ -278,27 +278,27 @@ Go to **Settings -> DNS settings -> DNS Cache Configuration** and adjust the fol
 
 ### 🔗 Step 5: Configuring the Unbound service
 
-Now we can set our second service, **The Unbound service!**
-This service will help us to resolve queries privately and securely.
+Now we can set our second service, **The Unbound service!**<br>
+This service will help us to resolve queries **privately** and **securely**.
 
 #### 1. ICANN DNS Server Setup
 
 The Unbound service can resolve queries with the official **ICANN** DNS servers.<br>
 That can give us more privacy as our queries don't go through third parties like your ISP or Google.
 
-To get the ICANN DNS server information, we run this command that takes the info from the official site and restarts the service:
+To get the ICANN DNS server information, we run this command that takes the info from the **official** site and **restarts** the service:
 
 ```bash
 wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
-Next, we make a crontab that every 6 months refreshes the **root.hints** file and restart unbound.
+Next, we make a **crontab** that every **6 months** refreshes the **root.hints** file and restart unbound.
 
 ```bash
 crontab -e
 ```
 
-Choose the /bin/nano and paste the following code at the end of the file:
+Choose the **/bin/nano** and paste the following code at the end of the file:
 
 ```bash
 0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
@@ -312,7 +312,7 @@ Sets up the master security key so Unbound can validate DNS responses using DNSS
 docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutchell/unbound:latest -a /etc/unbound/root.key
 ```
 
-To **allow** the Unbound service to write the root.key file we give **read & write** permission to the **root.key** file and full permissions to the unbound directory.
+To **allow** the Unbound service to write the root.key file we give **read & write** permission to the **root.key** file and **full** permissions to the unbound directory.
 
 ```bash
 sudo chmod 664 ./unbound/root.key
@@ -341,7 +341,7 @@ If you get **status: NOERROR**, you are good to go.
 
 #### 4. Connecting AdGuard to Unbound
 
-Now the next step is to direct the AdGuard to use the Unbound service.
+Now the next step is to direct the **AdGuard** to use the **Unbound** service.
 
 Go to the **AdGuard** configuration page, enter the **Settings -> DNS settings -> Upstream DNS servers**, erase all the default DNS servers, and write only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
 
