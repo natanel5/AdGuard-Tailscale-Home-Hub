@@ -277,15 +277,17 @@ The fastest way to refine your filtering rules is by using the **Query Log** fea
 Now we can set our second service, **The Unbound service!**
 This service will help us to resolve queries privately and securely.
 
+#### ICANN DNS Server Setup 
+
 The Unbound service can resolve queries with the official **ICANN** DNS servers. That can give us more privacy as our queries don't go through third parties like your ISP or google.
 
-To get the ICANN DNS server information we run this command that takes the info from the official site and restart the service:
+To get the ICANN DNS server information, we run this command that takes the info from the official site and restarts the service:
 
 ```bash
-wget https://www.internic.net/domain/named.root -qO /home/~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
+wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
-Next we make a crontab that every 6 months refresh the root.hints file and restart unbound.
+Next, we make a crontab that every 6 months refreshes the root.hints file and restart unbound.
 
 ```bash
 crontab -e
@@ -297,7 +299,9 @@ Choose the /bin/nano and paste the following code at the end of the file:
 0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
-Sets up the master security key so Unbound can validates DNS responses using DNSSEC to prevent spoofing.
+#### Configuring DNSSEC 
+
+Sets up the master security key so Unbound can validate DNS responses using DNSSEC to prevent spoofing.
 
 ```bash
 docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutchell/unbound:latest -a /etc/unbound/root.key
@@ -313,7 +317,8 @@ sudo chmod 664 ./unbound/root.key
 sudo chmod 755 ./unbound
 ```
 
-Now the server is up and you can check it with the dig tool.
+#### Testing The resolver
+Now the server is up, and you can check it with the dig tool.
 
 Update and download the tool
 
@@ -327,22 +332,24 @@ Now you can check if it's working.
 dig google.com @127.0.0.1 -p 5335
 ```
 
-If you get **status: NOERROR** you are good to go.
+If you get **status: NOERROR**, you are good to go.
+
+#### Connecting AdGuard to Unbound
 
 Now the next step is to direct the AdGuard to use the Unbound service.
 
-Go to the AdGuard configuration page and go to **Settings -> DNS settings -> Upstream DNS servers** and erase all the default dns servers and put only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
+Go to the AdGuard configuration page and go to **Settings -> DNS settings -> Upstream DNS servers** and erase all the default DNS servers and put only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
 
-Next we will fail-proofing our system so if the unbound service is down we redirect the queries to more reliable servers like Google, Cloudflare, Quad9 etc.
+Next, we will fail-proof our system so that, if the unbound service is down, we redirect the queries to more reliable servers like Google, Cloudflare, Quad9, etc.
 
-On the same block go to **Fallback DNS servers** and write one of the following options.
+On the same block, go to **Fallback DNS servers** and write one of the following options.
 
-- 1.1.1.1 - Cloudflare DNS for fast, reliable, secure and private.
-- 8.8.8.8 - Google DNS for fast, reliable and secure.
-- 9.9.9.9 - Quad9 DNS for fast, reliable, secure and even more private.
+- 1.1.1.1 - Cloudflare DNS for fast, reliable, secure, and private.
+- 8.8.8.8 - Google DNS for fast, reliable, and secure.
+- 9.9.9.9 - Quad9 DNS for fast, reliable, secure, and even more private.
 - any other DNS server you want.
 
-Last go to **Upstream timeout** setting that allow you to choose how much time it takes for the AdGuard to redirect the queries to the fallback DNS servers. The default is 10 seconds, but my recommendation is 3-5 seconds and hit apply.
+Last go to **Upstream timeout** setting that allows you to choose how much time it takes for AdGuard to redirect the queries to the fallback DNS servers. The default is 10 seconds, but my recommendation is 3-5 seconds, and press apply.
 
 > [!NOTE]
 > You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
@@ -350,13 +357,15 @@ Last go to **Upstream timeout** setting that allow you to choose how much time i
 ### 🛡️ Step 5: Configuring Tailscale service
 
 The Final service we will configure is the **Tailscale service!**
-With this service we can enable several key features:
+With this service, we can enable several key features:
 
 - **Private Exit Node:** Transform your Pi into a dedicated **VPN server**. By routing your traffic through this node, your communication originates from your home network regardless of your actual location. This ensures a secure and private connection, even when using untrusted public Wi-Fi.
 
 - **Global Ad-Blocking:** Route all DNS queries through the Pi to leverage AdGuard and Unbound protections on the go. This ensures your DNS traffic is filtered and private, just as it is at home.
 
 - **Subnet Router:** Securely access local home devices and services from anywhere in the world without exposing them to the public internet.
+
+#### Preparing our network settings
 
 To begin, we need to add a configuration to the file that allows the system kernel to forward IPv4 and IPv6 traffic between network interfaces:
 
@@ -374,49 +383,9 @@ This command loads and applies the new kernel settings we created in the previou
 sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
 ```
 
-We need to get auth key so we go to the tailscale.com and create new account when you are inside the **Admin console** go to **Settings** and on the scrollbar go to **keys**, press **Generate auth key** leave the default as is and only check the **pre-approved** box.
-After hitting **Generate key** copy the key and replace the variable content with your key.
+#### Network Performance Optimization
 
-Set your Auth Key as an environment variable:
-
-```bash
- export TS_AUTHKEY=<YOUR_TAILSCALE_AUTH_KEY>
-```
-
-Open the **Docker-compose.yml**:
-
-```bash
-sudo nano docker-compose.yml
-```
-
-Change the **TS_ROUTES** to your subnet range (if your pi ip is 192.168.1.XXX so your subnet range is 192.168.1.0/24 and if your 10.0.0.XXX so your subnet range is 10.0.0.0/24 and so...).
-
-Start the container (it will automatically use the key):
-
-```bash
-docker compose up -d
-```
-
-After authentication open the **Admin console** and make the following changes:
-
-Make your PI **Exit Node**:
-Go to Machines and look for your machine name **tailscale-pi** press on the 3 dots and press **Edit route settings** and make the option **Use as exit node** checked. For you to access the home **private_ip's** we need to enable the **Subnet Router** on the same place check the box with your subnet.
-
-Next go to **DNS** and under **Nameservers** on **Global nameservers** press **Add nameserver** press **Custom** and add your pi tailnet ip to the Nameserver slot.
-
-This is an easy way to get the **pi tailnet ip**
-
-```bash
-docker exec tailscale tailscale ip -4
-```
-
-Check also the **Use with exit node** option.
-
-Next, ensure **Override DNS servers** is checked.
-
-#### Network Performance Optimization (Recommended for Pi)
-
-Update the package list and installs ethtool – a utility used to modify low-level network interface settings at the hardware level:
+Update the package list and install ethtool – a utility used to modify low-level network interface settings at the hardware level:
 
 ```bash
 sudo apt update && sudo apt install ethtool -y
@@ -425,7 +394,8 @@ sudo apt update && sudo apt install ethtool -y
 Creates a system service that configures the network interface (eth0) to operate optimally for VPN traffic by enabling rx-udp-gro-forwarding:
 
 > [!NOTE]
-> If you are using a Raspberry Pi 5 or a different OS version, your interface name might be end0 instead of eth0. You can check your interface name by running **ip link**.
+> If you are using a Raspberry Pi 5 or a different OS version, your interface name might be end0 instead of eth0. You can check your interface name by running **ip link** and changing the following commands.
+
 
 ```bash
 sudo nano /etc/systemd/system/tailscale-optimize.service
@@ -475,15 +445,60 @@ sudo apt install iptables-persistent -y
 
 choose **yes** twice.
 
+#### Creating a Tailscale account and connecting your PI
+
+We need to get the auth key, so we go to [tailscale.com] and create a new account. When you are inside the **Admin console**, go to **Settings**, on the scrollbar go to **keys**, press **Generate auth key**, leave the default as is, and only check the **pre-approved** box.
+After pressing **Generate key**, copy the key and replace the variable content with your key.
+
+Set your Auth Key as an environment variable:
+
+```bash
+ export TS_AUTHKEY=<YOUR_TAILSCALE_AUTH_KEY>
+```
+
+Open the **Docker-compose.yml**:
+
+```bash
+sudo nano docker-compose.yml
+```
+
+Change the **TS_ROUTES** to your subnet range (if your PI IP is 192.168.1.XXX, your subnet range is 192.168.1.0/24; if your 10.0.0.XXX, your subnet range is 10.0.0.0/24, etc.).
+
+Start the container (it will automatically use the key):
+
+```bash
+docker compose up -d
+```
+
+#### Configuring the Tailscale
+
+After authentication, open the **Admin console** and make the following changes:
+
+Make your PI **Exit Node**:
+Go to Machines, find your machine name **tailscale-pi**, press the 3 dots, and press **Edit route settings**, mark the option **Use as exit node**.
+For you to access the home **private_ips**, we need to enable the **Subnet Router** in the same place, mark the box with your subnet.
+
+Next, go to **DNS** and under **Nameservers** on **Global nameservers** press **Add nameserver** press **Custom** and add your Pi tailnet IP to the Nameserver slot.
+
+This is an easy way to get the **pi tailnet ip**
+
+```bash
+docker exec tailscale tailscale ip -4
+```
+
+Check also the **Use with exit node** option.
+
+Next, ensure **Override DNS servers** is checked.
+
 > [!TIP]
 > **Optional:**
-> Go to the **Tailscale Admin Console -> Machines** and pressing again on the 3 dots next to the PI name and press **Disable Key Expiry**. This make sure you dont need to reconnect your PI again every 180 days.
+> Go to the **Tailscale Admin Console -> Machines** and press again on the 3 dots next to the PI name and press **Disable Key Expiry**. This makes sure you don't need to reconnect your PI again every 180 days.
 
 #### Optional Settings:
 
 **Device Approval:**
-This is another layer of protection so every time a new machine added the admin have to accept the mechine.
-To add this go to **Settings -> Device management -> Device Approval** and toggle on the **Manually approve new devices**.
+This is another layer of protection, so every time a new machine is added, the admin has to accept the machine.
+To add this, go to **Settings -> Device management -> Device Approval** and toggle on the **Manually approve new devices**.
 
 ## 🏁 Final Words
 
