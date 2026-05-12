@@ -121,7 +121,7 @@ docker --version && docker compose version
 
 Now that Docker is ready, we will pull the project files from GitHub to the Raspberry Pi.
 
-### 1. Clone the Repository
+#### 1. Clone the Repository
 
 Navigate to your home directory and clone this project:
 
@@ -147,7 +147,7 @@ sudo docker-compose up -d
 
 We are going to set up our first service, **AdGuard Home!**
 
-#### Getting Started with AdGuard
+#### 1. Getting Started with AdGuard
 
 First, open a browser on your computer and navigate to:
 
@@ -175,7 +175,7 @@ In the next step, choose a username and a password.
 On the next page, you'll see a guide on connecting your AdGuard to the router;<br>
 You can **ignore** it and click **Next** because we'll cover it later.
 
-#### Adding blocklists:
+#### 2. Adding blocklists:
 
 Go to **Filters -> DNS Blocklists**<br>
 AdGuard includes default lists; ensure they are enabled.
@@ -188,17 +188,17 @@ But it's important to do your **own research**.
 > **Optional:** You can go to **Filters -> Blocked services** for blocking specific apps, websites, or
 > online programs from your network.
 
-#### Connecting AdGuard to your Network:
+#### 3. Connecting AdGuard to your Network:
 
 To add AdGuard to your home network, we have 3 steps:
 
-#### Enter the router management UI:
+#### 4. Enter the router management UI:
 
 Navigate to your router's address in the browser.
 Usually it's **192.168.1.1**, but sometimes it can be **192.168.0.1** or **10.0.0.1**.
 If it's none of the above, you can look at the Network settings on any device connected to the same network and look for the **Default Gateway**; this is your router's IP address.
 
-#### Assigning a Static IP to your Pi:
+#### 5. Assigning a Static IP to your Pi:
 
 Your router's DHCP server assigns IP addresses dynamically.
 Sometimes, if your Pi or your router restarts, the DHCP server might assign a new IP to the Pi.
@@ -218,7 +218,7 @@ The output should follow this format: **00:1a:2b:3c:4d:5e**
 > The MAC address depends on your connection type (Wi-Fi or LAN).<br>
 > If you switch between them, you will need to update your DHCP reservation with the new MAC address.
 
-#### Forward all your DNS queries to the Pi:
+#### 6. Forward all your DNS queries to the Pi:
 
 For the final part, we need to make sure all the DNS queries route through your AdGuard, located inside your home Pi.
 
@@ -231,19 +231,9 @@ We have 2 choices:
   You can go to the **AdGuard management UI** and navigate to the **setup guide** tab, and see the
   instructions on any device.
 
-#### Additional configurations (Not mandatory):
+#### 7. Custom Filtering Rules:
 
-Go to **Settings -> DNS settings -> DNS Cache Configuration** and adjust the following configurations:
-
-- **Cache size** - Change the number to **67,108,864** (64MB);<br>
-  Increasing the cache size reduces recursive lookups and improves overall network latency.
-
-- **Optimistic caching** - Enable this to improve performance;<br>
-  This allows AdGuard to serve expired entries from the cache while simultaneously updating them in the background.
-
-**Custom Filtering Rules:**<br>
-
-Lastly go to **Filters -> Custom filtering rules** and enter these rules. This is where you can manage your own whitelist or blacklist.
+Lastly, go to **Filters -> Custom filtering rules** and enter these rules. This is where you can manage your own whitelist or blacklist.
 
 ```Plaintext
 ! Samsung News (Unblock Taboola for Samsung News Feed)
@@ -272,12 +262,22 @@ The fastest way to refine your filtering rules is by using the **Query Log** fea
 
 - **Targeted Control:** You can apply these rules globally or restrict them to a **specific client**, The option to target a specific user is available right in the query details window (next to the Block/Unblock button), allowing for different policies across your devices (e.g., stricter rules for IoT devices vs. your personal laptop).
 
-### 🛡️ Step 4: Configuring the Unbound service
+#### 8. Additional configurations (Not mandatory):
+
+Go to **Settings -> DNS settings -> DNS Cache Configuration** and adjust the following configurations:
+
+- **Cache size** - Change the number to **67,108,864** (64MB);<br>
+  Increasing the cache size reduces recursive lookups and improves overall network latency.
+
+- **Optimistic caching** - Enable this to improve performance;<br>
+  This allows AdGuard to serve expired entries from the cache while simultaneously updating them in the background.
+
+### 🛡️ Step 5: Configuring the Unbound service
 
 Now we can set our second service, **The Unbound service!**
 This service will help us to resolve queries privately and securely.
 
-#### ICANN DNS Server Setup 
+#### 1. ICANN DNS Server Setup:
 
 The Unbound service can resolve queries with the official **ICANN** DNS servers. That can give us more privacy as our queries don't go through third parties like your ISP or google.
 
@@ -299,7 +299,7 @@ Choose the /bin/nano and paste the following code at the end of the file:
 0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
-#### Configuring DNSSEC 
+#### 2. Configuring DNSSEC:
 
 Sets up the master security key so Unbound can validate DNS responses using DNSSEC to prevent spoofing.
 
@@ -317,7 +317,7 @@ sudo chmod 664 ./unbound/root.key
 sudo chmod 755 ./unbound
 ```
 
-#### Testing The resolver
+#### 3. Testing the resolver:
 Now the server is up, and you can check it with the dig tool.
 
 Update and download the tool
@@ -334,7 +334,7 @@ dig google.com @127.0.0.1 -p 5335
 
 If you get **status: NOERROR**, you are good to go.
 
-#### Connecting AdGuard to Unbound
+#### 4. Connecting AdGuard to Unbound:
 
 Now the next step is to direct the AdGuard to use the Unbound service.
 
@@ -354,7 +354,7 @@ Last go to **Upstream timeout** setting that allows you to choose how much time 
 > [!NOTE]
 > You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
 
-### 🛡️ Step 5: Configuring Tailscale service
+### 🛡️ Step 6: Configuring Tailscale service
 
 The Final service we will configure is the **Tailscale service!**
 With this service, we can enable several key features:
@@ -365,7 +365,7 @@ With this service, we can enable several key features:
 
 - **Subnet Router:** Securely access local home devices and services from anywhere in the world without exposing them to the public internet.
 
-#### Preparing our network settings
+#### 1. Preparing our network settings:
 
 To begin, we need to add a configuration to the file that allows the system kernel to forward IPv4 and IPv6 traffic between network interfaces:
 
@@ -383,7 +383,7 @@ This command loads and applies the new kernel settings we created in the previou
 sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
 ```
 
-#### Network Performance Optimization
+#### 2. Network Performance Optimization:
 
 Update the package list and install ethtool – a utility used to modify low-level network interface settings at the hardware level:
 
@@ -445,7 +445,7 @@ sudo apt install iptables-persistent -y
 
 choose **yes** twice.
 
-#### Creating a Tailscale account and connecting your PI
+#### 3. Creating a Tailscale account and connecting your PI:
 
 We need to get the auth key, so we go to [tailscale.com] and create a new account. When you are inside the **Admin console**, go to **Settings**, on the scrollbar go to **keys**, press **Generate auth key**, leave the default as is, and only check the **pre-approved** box.
 After pressing **Generate key**, copy the key and replace the variable content with your key.
@@ -470,7 +470,7 @@ Start the container (it will automatically use the key):
 docker compose up -d
 ```
 
-#### Configuring the Tailscale
+#### 4. Configuring the Tailscale:
 
 After authentication, open the **Admin console** and make the following changes:
 
@@ -494,7 +494,7 @@ Next, ensure **Override DNS servers** is checked.
 > **Optional:**
 > Go to the **Tailscale Admin Console -> Machines** and press again on the 3 dots next to the PI name and press **Disable Key Expiry**. This makes sure you don't need to reconnect your PI again every 180 days.
 
-#### Optional Settings:
+#### 5. Optional Settings:
 
 **Device Approval:**
 This is another layer of protection, so every time a new machine is added, the admin has to accept the machine.
