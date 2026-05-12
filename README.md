@@ -262,7 +262,7 @@ The fastest way to refine your filtering rules is by using the **Query Log** fea
 
 - **Action:** Click any query to open the details view, then use the button at the bottom of the window to instantly **Block** or **Unblock** it.
 
-- **Targeted Control:** You can apply these rules globally or restrict them to a **specific client**, The option to target a specific user is available right in the query details window (next to the Block/Unblock button), allowing for different policies across your devices (e.g., stricter rules for IoT devices vs. your personal laptop).
+- **Targeted Control:** You can apply these rules globally or restrict them to a **specific client**. The option to target a specific user is available right in the query details window (next to the Block/Unblock button), allowing for different policies across your devices (e.g., stricter rules for IoT devices vs. your personal laptop).
 
 #### 8. Additional configurations (Not mandatory)
 
@@ -276,14 +276,15 @@ Go to **Settings -> DNS settings -> DNS Cache Configuration** and adjust the fol
 
 <br>
 
-### 🛡️ Step 5: Configuring the Unbound service
+### 🔗 Step 5: Configuring the Unbound service
 
 Now we can set our second service, **The Unbound service!**
 This service will help us to resolve queries privately and securely.
 
 #### 1. ICANN DNS Server Setup
 
-The Unbound service can resolve queries with the official **ICANN** DNS servers. That can give us more privacy as our queries don't go through third parties like your ISP or google.
+The Unbound service can resolve queries with the official **ICANN** DNS servers.<br>
+That can give us more privacy as our queries don't go through third parties like your ISP or Google.
 
 To get the ICANN DNS server information, we run this command that takes the info from the official site and restarts the service:
 
@@ -291,7 +292,7 @@ To get the ICANN DNS server information, we run this command that takes the info
 wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
-Next, we make a crontab that every 6 months refreshes the root.hints file and restart unbound.
+Next, we make a crontab that every 6 months refreshes the **root.hints** file and restart unbound.
 
 ```bash
 crontab -e
@@ -311,7 +312,7 @@ Sets up the master security key so Unbound can validate DNS responses using DNSS
 docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutchell/unbound:latest -a /etc/unbound/root.key
 ```
 
-To allow the Unbound service to write the root.key file we give read & write permission to the root.key file and full permissions to the unbound directory.
+To **allow** the Unbound service to write the root.key file we give **read & write** permission to the **root.key** file and full permissions to the unbound directory.
 
 ```bash
 sudo chmod 664 ./unbound/root.key
@@ -322,7 +323,7 @@ sudo chmod 755 ./unbound
 ```
 
 #### 3. Testing the resolver
-Now the server is up, and you can check it with the dig tool.
+Now the server is up, and you can check it with the **dig tool**.
 
 Update and download the tool
 
@@ -342,7 +343,7 @@ If you get **status: NOERROR**, you are good to go.
 
 Now the next step is to direct the AdGuard to use the Unbound service.
 
-Go to the AdGuard configuration page and go to **Settings -> DNS settings -> Upstream DNS servers** and erase all the default DNS servers and put only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
+Go to the **AdGuard** configuration page, enter the **Settings -> DNS settings -> Upstream DNS servers**, erase all the default DNS servers, and write only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
 
 Next, we will fail-proof our system so that, if the unbound service is down, we redirect the queries to more reliable servers like Google, Cloudflare, Quad9, etc.
 
@@ -353,27 +354,31 @@ On the same block, go to **Fallback DNS servers** and write one of the following
 - 9.9.9.9 - Quad9 DNS for fast, reliable, secure, and even more private.
 - any other DNS server you want.
 
-Last go to **Upstream timeout** setting that allows you to choose how much time it takes for AdGuard to redirect the queries to the fallback DNS servers. The default is 10 seconds, but my recommendation is 3-5 seconds, and press apply.
+Last go to **Upstream timeout** setting, which allows you to choose how much time it takes for AdGuard to redirect the queries to the **fallback DNS servers**.<br>
+The default is 10 seconds, but my recommendation is 3-5 seconds. Choose and press apply.
 
 > [!NOTE]
 > You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
 
 <br>
 
-### 🛡️ Step 6: Configuring Tailscale service
+### 🛜 Step 6: Configuring Tailscale service
 
 The Final service we will configure is the **Tailscale service!**
 With this service, we can enable several key features:
 
-- **Private Exit Node:** Transform your Pi into a dedicated **VPN server**. By routing your traffic through this node, your communication originates from your home network regardless of your actual location. This ensures a secure and private connection, even when using untrusted public Wi-Fi.
+- **Private Exit Node:** Transform your Pi into a dedicated **VPN server**. <br>
+By routing your traffic through your Pi, your communication leaves from your home network regardless of your actual location.
+This ensures a secure and private connection, even when using untrusted public Wi-Fi.
 
-- **Global Ad-Blocking:** Route all DNS queries through the Pi to leverage AdGuard and Unbound protections on the go. This ensures your DNS traffic is filtered and private, just as it is at home.
+- **Global Ad-Blocking:** Route all DNS queries through the Pi to leverage AdGuard and Unbound protections on the go.<br>
+This ensures your DNS traffic is filtered and private, just as it is at home.
 
-- **Subnet Router:** Securely access local home devices and services from anywhere in the world without exposing them to the public internet.
+- **Subnet Router:** **Securely** access local home devices and services from anywhere in the world **without** exposing them to the public internet.
 
 #### 1. Preparing our network settings
 
-To begin, we need to add a configuration to the file that allows the system kernel to forward IPv4 and IPv6 traffic between network interfaces:
+To begin, we need to add a configuration to the file that allows the **system kernel** to forward **IPv4** and **IPv6** traffic between network interfaces:
 
 ```bash
 echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
@@ -383,7 +388,7 @@ echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
 echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
 ```
 
-This command loads and applies the new kernel settings we created in the previous steps into the active system, without requiring a reboot:
+This command loads and applies the new kernel settings we created in the previous steps into the active system, **without** requiring a **reboot**:
 
 ```bash
 sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
@@ -391,16 +396,16 @@ sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
 
 #### 2. Network Performance Optimization
 
-Update the package list and install ethtool – a utility used to modify low-level network interface settings at the hardware level:
+Update the package list and install **ethtool**, which is a utility used to modify low-level network interface settings at the hardware level:
 
 ```bash
 sudo apt update && sudo apt install ethtool -y
 ```
 
-Creates a system service that configures the network interface (eth0) to operate optimally for VPN traffic by enabling rx-udp-gro-forwarding:
+Create a system service that configures the **network interface** (eth0) to operate optimally for **VPN** traffic by enabling **rx-udp-gro-forwarding**:
 
-> [!NOTE]
-> If you are using a Raspberry Pi 5 or a different OS version, your interface name might be end0 instead of eth0. You can check your interface name by running **ip link** and changing the following commands.
+> [!IMPORTANT]
+> If you are using a Raspberry Pi 5 or a different OS version, your interface name might be **end0** instead of **eth0**. You can check your interface name by running **ip link** and changing the following commands.
 
 
 ```bash
@@ -423,13 +428,13 @@ WantedBy=multi-user.target
 
 Press **CTRL + S** to save and **CTRL + X** to exit.
 
-Enables the new service to run immediately and ensures it starts automatically whenever the Pi reboots:
+Enable the new service to run **immediately** and ensure it starts **automatically** whenever the Pi **reboots**:
 
 ```bash
 sudo systemctl enable --now tailscale-optimize.service
 ```
 
-These commands configure NAT masquerading and permit bidirectional packet forwarding between the Tailscale interface and the internet, enabling the Raspberry Pi to function as a secure Exit Node:
+These commands configure **NAT masquerading** and permit **bidirectional packet forwarding** between the Tailscale interface and the internet, **enabling** the Raspberry Pi to function as a **secure Exit Node**:
 
 ```bash
 sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
@@ -443,7 +448,7 @@ sudo iptables -A FORWARD -i tailscale0 -j ACCEPT
 sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
 ```
 
-Installs a utility to save the current firewall rules, ensuring the Exit Node functionality persists after a reboot:
+Install a utility to **save** the **current firewall rules**, ensuring the Exit Node functionality **persists** after a **reboot**:
 
 ```bash
 sudo apt install iptables-persistent -y
@@ -451,12 +456,15 @@ sudo apt install iptables-persistent -y
 
 choose **yes** twice.
 
-#### 3. Creating a Tailscale account and connecting your PI
+#### 3. Creating a Tailscale account and connecting your Pi
 
-We need to get the auth key, so we go to [tailscale.com](tailscale.com) and create a new account. When you are inside the **Admin console**, go to **Settings**, on the scrollbar go to **keys**, press **Generate auth key**, leave the default as is, and only check the **pre-approved** box.
+We need to create an **auth key**, so we go to [tailscale.com](https://tailscale.com/) and create a new account.
+
+When you are inside the **Admin console**, go to **Settings**, on the scrollbar go to **keys**, press **Generate auth key**, leave the default as is, and only check the **pre-approved** box.
+
 After pressing **Generate key**, copy the key and replace the variable content with your key.
 
-Set your Auth Key as an environment variable:
+Set your Auth Key as an **environment variable**:
 
 ```bash
  export TS_AUTHKEY=<YOUR_TAILSCALE_AUTH_KEY>
@@ -468,9 +476,9 @@ Open the **Docker-compose.yml**:
 sudo nano docker-compose.yml
 ```
 
-Change the **TS_ROUTES** to your subnet range (if your PI IP is 192.168.1.XXX, your subnet range is 192.168.1.0/24; if your 10.0.0.XXX, your subnet range is 10.0.0.0/24, etc.).
+Change the **TS_ROUTES** to your subnet range (if your **Pi IP** is **192.168.1.XXX**, your subnet range is **192.168.1.0/24**; if its **10.0.0.XXX**, your subnet range is **10.0.0.0/24**, etc.).
 
-Start the container (it will automatically use the key):
+Start the container (it will **automatically** use the key):
 
 ```bash
 docker compose up -d
@@ -480,13 +488,14 @@ docker compose up -d
 
 After authentication, open the **Admin console** and make the following changes:
 
-Make your PI **Exit Node**:
-Go to Machines, find your machine name **tailscale-pi**, press the 3 dots, and press **Edit route settings**, mark the option **Use as exit node**.
-For you to access the home **private_ips**, we need to enable the **Subnet Router** in the same place, mark the box with your subnet.
+Make your Pi **Exit Node**:
+Go to **Machines**, find your machine name **tailscale-pi**, press the 3 dots, and press **Edit route settings**, mark the option **Use as exit node**.
 
-Next, go to **DNS** and under **Nameservers** on **Global nameservers** press **Add nameserver** press **Custom** and add your Pi tailnet IP to the Nameserver slot.
+For you to access the home **private_ips**, we need to enable the **Subnet Router** in the same place, mark the box with **your subnet**.
 
-This is an easy way to get the **pi tailnet ip**
+Next, go to **DNS** and under **Nameservers** on **Global nameservers** press **Add nameserver** press **Custom** and add your **Pi tailnet IP** to the Nameserver slot.
+
+This is an easy way to get your **Pi tailnet IP**
 
 ```bash
 docker exec tailscale tailscale ip -4
@@ -494,22 +503,22 @@ docker exec tailscale tailscale ip -4
 
 Check also the **Use with exit node** option.
 
-Next, ensure **Override DNS servers** is checked.
+Next, ensure **Override DNS servers** is **checked**.
 
 > [!TIP]
 > **Optional:**
-> Go to the **Tailscale Admin Console -> Machines** and press again on the 3 dots next to the PI name and press **Disable Key Expiry**. This makes sure you don't need to reconnect your PI again every 180 days.
+> Go to the **Tailscale Admin Console -> Machines** and press again on the 3 dots next to the Pi name and press **Disable Key Expiry**. This makes sure you don't need to **reconnect** your PI again **every 180 days**.
 
 #### 5. Optional Settings
 
 **Device Approval:**
-This is another layer of protection, so every time a new machine is added, the admin has to accept the machine.
-To add this, go to **Settings -> Device management -> Device Approval** and toggle on the **Manually approve new devices**.
+This is another layer of protection, so every time a new machine is added, the **admin** has to accept the machine.
+To add this, go to **Settings -> Device management -> Device Approval** and toggle **on** the **Manually approve new devices**.
 
 ## 🏁 Final Words
 
 **That's it! Congratulations!** 🥳
-You now have a fully functional, secure, and ad-free network flow. Your privacy is back in your hands, and your home network is accessible from anywhere in the world.
+You now have a fully functional, secure, and **ad-free** network flow. Your privacy is back in your hands, and your home network is accessible from **anywhere** in the world.
 
 If you found this project helpful, feel free to ⭐ **star the repository** and share it with others!
 
