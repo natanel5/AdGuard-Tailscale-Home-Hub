@@ -90,7 +90,7 @@ To ensure a lightweight and stable environment, we use **Raspberry Pi OS Lite (6
 
 #### 1. Download Raspberry Pi Imager
 
-First, download and install the official imaging tool for your operating system:
+First, download and install the official imaging tool for your operating system:<br>
 **Official Website:** [raspberrypi.com/software](https://www.raspberrypi.com/software/)
 
 #### 2. Prepare the MicroSD Card
