@@ -2,6 +2,13 @@
 
 # 🚀 AdGuard & Tailscale Home Hub 🛡️
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=raspberry-pi&logoColor=white)](https://www.raspberrypi.org/)
+[![Tailscale](https://img.shields.io/badge/Tailscale-FF5C0A?style=for-the-badge&logo=tailscale&logoColor=white)](https://tailscale.com/)
+[![AdGuard Home](https://img.shields.io/badge/AdGuard%20Home-68BC71?style=for-the-badge&logo=adguard&logoColor=white)](https://adguard.com/)
+[![Unbound](https://img.shields.io/badge/Unbound-2D368C?style=for-the-badge&logo=NextDNS&logoColor=white)](https://nlnetlabs.nl/projects/unbound/about/)
+
 </div>
 
 **Ad blocker, private DNS server, and secure remote access gateway.** This project turns your Raspberry Pi into a central hub that cleans your internet from ads and lets you connect back home securely from any device, anywhere.
@@ -66,6 +73,12 @@ Before you begin, ensure you have the following:
 ## 💻 Installation
 
 </div>
+
+> [!CAUTION]
+> **AI Disclosure & Disclaimer:** <br>
+>  Parts of the configuration, scripts, and this documentation were developed with the assistance of AI tools. While I have made a **best effort** to review, test, and optimize the code for security, I am not a professional security auditor. 
+> 
+> Please **use this project with caution**, review the scripts before running them, and understand that you are responsible for the security of your own home network.
 
 <div align="center">
 
