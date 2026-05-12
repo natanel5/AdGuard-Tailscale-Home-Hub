@@ -125,6 +125,18 @@ Once you have saved your customization settings, click **YES** to start the flas
 Wait for the flashing process to finish and for the "Write Successful" confirmation before removing the card. <br>
 Insert the MicroSD card into your Raspberry Pi and connect the power supply to begin the initial boot.
 
+#### 5. Connecting to Pi
+
+Now you can connect via **SSH** to your Pi:
+
+```bash
+ssh <YOUR_PI_USERNAME>@<YOUR_PI_HOSTNAME OR YOUR_PI_IP_ADDRESS>
+```
+
+Enter **yes** and afterward enter your password.
+
+**You are in!**
+
 <br>
 
 <div align="center">
