@@ -421,7 +421,7 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 ```
 
-Press **CTRL S** to save and **CTRL X** to exit.
+Press **CTRL + S** to save and **CTRL + X** to exit.
 
 Enables the new service to run immediately and ensures it starts automatically whenever the Pi reboots:
 
@@ -453,7 +453,7 @@ choose **yes** twice.
 
 #### 3. Creating a Tailscale account and connecting your PI
 
-We need to get the auth key, so we go to [tailscale.com] and create a new account. When you are inside the **Admin console**, go to **Settings**, on the scrollbar go to **keys**, press **Generate auth key**, leave the default as is, and only check the **pre-approved** box.
+We need to get the auth key, so we go to [tailscale.com](tailscale.com) and create a new account. When you are inside the **Admin console**, go to **Settings**, on the scrollbar go to **keys**, press **Generate auth key**, leave the default as is, and only check the **pre-approved** box.
 After pressing **Generate key**, copy the key and replace the variable content with your key.
 
 Set your Auth Key as an environment variable:
