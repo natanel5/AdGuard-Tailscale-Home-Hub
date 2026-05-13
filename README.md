@@ -383,11 +383,11 @@ docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutc
 To **allow** the Unbound service to write the root.key file we give **read & write** permission to the **root.key** file and **full** permissions to the unbound directory.
 
 ```bash
-sudo chmod 664 ./unbound/root.key
+sudo chmod 666 ./unbound/root.key
 ```
 
 ```bash
-sudo chmod 755 ./unbound
+sudo chmod 777 ./unbound
 ```
 
 #### 3. Testing the resolver
