@@ -200,7 +200,7 @@ cd AdGuard-Tailscale-Home-Hub
 Start the services in detached mode (running in the background):
 
 ```bash
-sudo docker-compose up -d
+sudo docker compose up -d
 ```
 
 <br>
