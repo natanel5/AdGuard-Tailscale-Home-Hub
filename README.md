@@ -579,12 +579,18 @@ Next, ensure **Override DNS servers** is **checked**.
 
 > [!TIP]
 > **Optional:**
-> Go to the **Tailscale Admin Console -> Machines** and press again on the 3 dots next to the Pi name and press **Disable Key Expiry**. This makes sure you don't need to **reconnect** your PI again **every 180 days**.
+> Go to the **Tailscale Admin Console -> Machines** and press again on the 3 dots next to the Pi name and press **Disable Key Expiry**. This ensures you don't need to **reconnect** your PI **every 180 days**.
 
-#### 5. Optional Settings
+#### 5. Adding Devices & Family Members
+Now that your Tailscale is **live**, you can connect your personal devices and invite family members to join your private network.
+- **To add your own devices:** Install the Tailscale app on your Phone or Computer and log in with your account.
+- **To add others:** Go to the Admin Console, navigate to Machines > Add Device, and share the invite link with your family.
+- **Guides:** You can find step-by-step instructions for every OS (Windows, macOS, iOS, Android, Linux) directly in the Tailscale dashboard.
+
+#### 6. Optional Settings
 
 **Device Approval:**
-This is another layer of protection, so every time a new machine is added, the **admin** has to accept the machine.
+This is another layer of protection, so every time a new machine is added, the **admin** must approve it.
 To add this, go to **Settings -> Device management -> Device Approval** and toggle **on** the **Manually approve new devices**.
 
 <br>
