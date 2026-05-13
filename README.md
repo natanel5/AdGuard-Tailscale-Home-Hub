@@ -291,7 +291,17 @@ For the final part, we need to make sure all the DNS queries route through your 
 We have 2 choices:
 
 - **Option 1 - Router-Level Setup (Recommended):**<br>
-  Find the setting called **DNS Server Address** (typically found under **LAN** or **Internet** settings) and change the default DNS to your Pi's static IP.
+  Find the DNS Server Address setting in your router's dashboard and replace the default DNS with your Pi's static IP. <br>
+  This setting is typically found in one of two places:
+  - **Internet / WAN Settings:** The router acts as a proxy. It receives queries and forwards them to AdGuard.<br>
+    **In AdGuard logs, all traffic will appear as coming from the router's IP **only**.**
+    
+  - **DHCP Server Settings:** The router informs each device to use the Pi's DNS directly when they connect to the network.<br>
+    This is the **preferred method** as it allows AdGuard to identify individual devices. <br>
+    **It may require a router restart or for devices to reconnect to pick up the new DNS settings.**
+
+> [!NOTE]
+> You can configure both options simultaneously so the WAN setting covers your network until each device picks up the updated DNS server via DHCP.
 
 - **Option 2 - Device-Level Setup:**<br>
   You can go to the **AdGuard management UI** and navigate to the **setup guide** tab, and see the
