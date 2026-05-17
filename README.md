@@ -312,17 +312,22 @@ We have 2 choices:
 Lastly, go to **Filters -> Custom filtering rules** and enter these rules. This is where you can manage your own whitelist or blacklist.
 
 ```Plaintext
-! Samsung News (Unblock Taboola for Samsung News Feed)
+! Samsung News (Unblock Taboola for Samsung News Feed):
 @@||cdn.taboola.com^$important
 @@||api.taboola.com^$important
 @@||images.taboola.com^$important
 
-! Meta / Instagram (Media & CDN)
+! Meta / Instagram (Media & CDN):
 @@||fbcdn.net^$important
 
-! Meta General Domains
+! Meta General Domains:
 @@||facebook.net^$important
 @@||instagram.net^$important
+
+! Additional Rules:
+@@||log22-normal-alisg.tiktokv.com^$important
+||adx.ukamobi.com^$important
+app.bugsnag.com
 ```
 
 This is the place you can enter your **own** filtering rules.
@@ -635,3 +640,43 @@ Feel free to open an **Issue** or submit a **Pull Request**. Your feedback and c
 </div>
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+<div align="center">
+
+### 🧱 Security & Verification
+
+</div>
+
+To ensure the system is fully optimized and secure, I conducted several benchmarks. You can easily run these tests yourself to verify the setup in real-time!
+
+#### 1. Anti-Spoofing & DNSSEC Protection
+
+The resolver was stress-tested using **GRC's DNS Nameserver Spoofability Test**. 
+
+**My Results:** **EXCELLENT**
+- **DNSSEC Validation:** Active and verified, ensuring all web records are cryptographically signed and genuine.
+- **Anti-Spoofing:** Achieved maximum randomness (entropy) for ports and IDs, making it nearly impossible for attackers to hijack your traffic.
+- **Privacy & Stealth:** The server completely ignores external queries, preventing it from being misused in public reflection attacks.
+
+![DNS Security Test](assets/dns_security_test.png)
+
+> **💡 How to test it yourself:**
+> 1. Connect to your Tailnet / home network.
+> 2. Visit the [GRC DNS Spoofability Test](https://www.grc.com/dns/dns.htm).
+> 3. Click the **"Test My DNS"** button and wait for the benchmark to analyze your resolver.
+
+#### 2. Ad-Blocking Efficiency
+
+Network-wide ad-blocking capabilities were verified using **AdBlock Tester**, achieving a consistent score of **97%**.
+
+![AdBlock Test Result](assets/adblock_test_result.png)
+
+> **💡 How to test it yourself:**
+> 1. Make sure your device is actively using the AdGuard Home DNS.
+> 2. Go to [AdBlock Tester](https://adblock-tester.com/).
+> 3. Run the test to see your live blocking score.
+
+> [!NOTE]
+> **Why 97% and not 100%?**
+> The remaining 3% accounts for cosmetic filtering (removing the empty layout placeholders left behind by blocked ads) and domain-local scripts. 
+> Since this infrastructure operates at the **DNS level** (via AdGuard Home), it focuses on blocking the actual ad traffic rather than rewriting webpage HTML. This architecture ensures maximum internet speed and zero performance overhead across all connected devices, including Smart TVs and mobile apps.
