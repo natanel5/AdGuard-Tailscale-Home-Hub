@@ -13,6 +13,8 @@
 
 **Ad blocker, private DNS server, and secure remote access gateway.** This project turns your Raspberry Pi into a central hub that cleans your internet from ads and lets you connect back home securely from any device, anywhere.
 
+<br>
+
 <div align="center">
 
 ## 🌟 Overview
@@ -33,6 +35,8 @@ I built this project to solve three main problems that standard home routers can
 **Recursive DNS:** Use Unbound to resolve queries directly from Root Servers for ultimate privacy.<br>
 **Global VPN (Exit Node):** Securely browse the web as if you are sitting in your living room, even when traveling abroad.<br>
 **Service Control:** Easily block or limit access to social media (TikTok, Instagram, etc.) and other services via a clean UI.
+
+<br>
 
 <div align="center">
 
@@ -56,6 +60,8 @@ graph LR;
 > [!NOTE]
 > **Note:** Tailscale provides an encrypted tunnel for remote devices to connect to the home network and use this stack securely from anywhere.
 
+<br>
+
 <div align="center">
 
 ## 📋 Prerequisites
@@ -67,6 +73,8 @@ Before you begin, ensure you have the following:
 - **Hardware:** Raspberry Pi (3B+, 4, or 5 recommended) with 1GB+ RAM.
 - **Storage:** 16GB+ MicroSD card.
 - **OS:** Raspberry Pi OS Lite (Debian 12) 64-bit.
+
+<br>
 
 <div align="center">
 
@@ -621,6 +629,8 @@ You now have a fully functional, secure, and **ad-free** network flow. Your priv
 
 If you found this project helpful, feel free to ⭐ **star the repository** and share it with others!
 
+<br>
+
 <div align="center">
 
 ## 🤝 Contributing & Support
@@ -633,6 +643,8 @@ Feel free to open an **Issue** or submit a **Pull Request**. Your feedback and c
 - **Bugs & Feature Requests:** Report them in the [Issues](https://github.com/natanel5/AdGuard-Tailscale-Home-Hub/issues) section.
 - **Custom Rules:** If you have useful filtering rules for specific regions or devices, I'd love to see them!
 
+<br>
+
 <div align="center">
 
 ## 📄 License
@@ -641,9 +653,11 @@ Feel free to open an **Issue** or submit a **Pull Request**. Your feedback and c
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+<br>
+
 <div align="center">
 
-### 🧱 Security & Verification
+## 🧱 Security & Verification
 
 </div>
 
@@ -660,10 +674,10 @@ The resolver was stress-tested using **GRC's DNS Nameserver Spoofability Test**.
 
 ![DNS Security Test](assets/dns_security_test.png)
 
-> **💡 How to test it yourself:**
-> 1. Connect to your Tailnet / home network.
-> 2. Visit the [GRC DNS Spoofability Test](https://www.grc.com/dns/dns.htm).
-> 3. Click the **"Test My DNS"** button and wait for the benchmark to analyze your resolver.
+**💡 How to test it yourself:**
+1. Connect to your Tailnet / home network.
+2. Visit the [GRC DNS Spoofability Test](https://www.grc.com/dns/dns.htm).
+3. Click the **"Test My DNS"** button and wait for the benchmark to analyze your resolver.
 
 #### 2. Ad-Blocking Efficiency
 
@@ -671,10 +685,10 @@ Network-wide ad-blocking capabilities were verified using **AdBlock Tester**, ac
 
 ![AdBlock Test Result](assets/adblock_test_result.png)
 
-> **💡 How to test it yourself:**
-> 1. Make sure your device is actively using the AdGuard Home DNS.
-> 2. Go to [AdBlock Tester](https://adblock-tester.com/).
-> 3. Run the test to see your live blocking score.
+**💡 How to test it yourself:**
+1. Make sure your device is actively using the AdGuard Home DNS.
+2. Go to [AdBlock Tester](https://adblock-tester.com/).
+3. Run the test to see your live blocking score.
 
 > [!NOTE]
 > **Why 97% and not 100%?**
