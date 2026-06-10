@@ -392,7 +392,7 @@ crontab -e
 Choose the **/bin/nano** and paste the following code at the end of the file:
 
 ```bash
-0 0 1 */6 * wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
+0 0 1 */6 * wget https://internic.net -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && cd ~/AdGuard-Tailscale-Home-Hub && /usr/bin/docker compose restart unbound
 ```
 
 #### 2. Configuring DNSSEC
@@ -406,11 +406,11 @@ docker run --rm -v $(pwd)/unbound:/etc/unbound --entrypoint unbound-anchor klutc
 To **allow** the Unbound service to write the root.key file we give **read & write** permission to the **root.key** file and **full** permissions to the unbound directory.
 
 ```bash
-sudo chmod 666 ./unbound/root.key
+sudo chown -R 101:104 ./unbound
 ```
 
 ```bash
-sudo chmod 777 ./unbound
+sudo chmod -R 770 ./unbound
 ```
 
 #### 3. Testing the resolver
