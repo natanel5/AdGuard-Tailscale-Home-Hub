@@ -25,14 +25,14 @@ I built this project to solve three main problems that standard home routers can
 
 **Network-Wide Ad Blocking:** Instead of installing ad-blockers on each individual device, AdGuard Home handles it at the source. If it's on your network, it's ad-free. Simple as that.
 
-**Privacy & Tracking:** By default, your ISP (Internet Service Provider) can see every website you visit through their DNS. This stack uses Unbound to bypass ISP resolvers and query root servers directly.
+**Privacy & Tracking:** Standard DNS providers profile your history and log every website you visit. This stack uses Unbound to bypass these third-party resolvers, query root servers directly, and keep your local DNS cache completely private.
 
 **Secure Remote Access:** When traveling, you often need a secure connection or your home's IP address to access local services. Tailscale creates an encrypted tunnel back to your Pi, acting as your own personal VPN (Exit Node).
 
 ### Key Features
 
 **Network-Wide Filtering:** Full control to block ads, apps, websites, trackers, and malware on every device in your home network. <br>
-**Recursive DNS:** Use Unbound to resolve queries directly from Root Servers for ultimate privacy.<br>
+**Recursive DNS:** Use Unbound to resolve queries directly from Root Servers for complete data ownership. <br>
 **Global VPN (Exit Node):** Securely browse the web as if you are sitting in your living room, even when traveling abroad.<br>
 **Service Control:** Easily block or limit access to social media (TikTok, Instagram, etc.) and other services via a clean UI.
 
@@ -375,7 +375,7 @@ This service will help us to resolve queries **privately** and **securely**.
 #### 1. ICANN DNS Server Setup
 
 The Unbound service can resolve queries with the official **ICANN** DNS servers.<br>
-That can give us more privacy as our queries don't go through third parties like your ISP or Google.
+That can give us more privacy as our queries don't go through third parties like your ISP DNS Resolver or Google.
 
 To get the ICANN DNS server information, we run this command that takes the info from the **official** site and **restarts** the service:
 
@@ -383,13 +383,13 @@ To get the ICANN DNS server information, we run this command that takes the info
 wget https://www.internic.net/domain/named.root -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && docker restart unbound
 ```
 
-Next, we make a **crontab** that every **6 months** refreshes the **root.hints** file and restart unbound.
+Next, we make a **crontab** that every **6 months** refreshes the **root.hints** file and restarts unbound.
 
 ```bash
 crontab -e
 ```
 
-Choose the **/bin/nano** and paste the following code at the end of the file:
+Choose **/bin/nano** and paste the following code at the end of the file:
 
 ```bash
 0 0 1 */6 * wget https://internic.net -qO ~/AdGuard-Tailscale-Home-Hub/unbound/root.hints && cd ~/AdGuard-Tailscale-Home-Hub && /usr/bin/docker compose restart unbound
@@ -432,21 +432,21 @@ If you get **status: NOERROR**, you are good to go.
 
 #### 4. Connecting AdGuard to Unbound
 
-Now the next step is to direct the **AdGuard** to use the **Unbound** service.
+Now the next step is to direct **AdGuard** to use the **Unbound** service.
 
-Go to the **AdGuard** configuration page, enter the **Settings -> DNS settings -> Upstream DNS servers**, erase all the default DNS servers, and write only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
+Go to the **AdGuard** configuration page, enter **Settings -> DNS settings -> Upstream DNS servers**, erase all the default DNS servers, and write only **127.0.0.1:5335** so we are redirecting every DNS query to our Unbound service.
 
-Next, we will fail-proof our system so that, if the unbound service is down, we redirect the queries to more reliable servers like Google, Cloudflare, Quad9, etc.
+Next, we will fail-proof our system so that if the Unbound service is down, we redirect the queries to more reliable servers like Google, Cloudflare, Quad9, etc.
 
-On the same block, go to **Fallback DNS servers** and write one of the following options.
+In the same block, go to **Fallback DNS servers** and write one of the following options.
 
 - 1.1.1.1 - Cloudflare DNS for fast, reliable, secure, and private.
 - 8.8.8.8 - Google DNS for fast, reliable, and secure.
 - 9.9.9.9 - Quad9 DNS for fast, reliable, secure, and even more private.
 - any other DNS server you want.
 
-Last go to **Upstream timeout** setting, which allows you to choose how much time it takes for AdGuard to redirect the queries to the **fallback DNS servers**.<br>
-The default is 10 seconds, but my recommendation is 3-5 seconds. Choose and press apply.
+Last, go to the **Upstream timeout** setting, which allows you to choose how much time it takes for AdGuard to redirect the queries to the **fallback DNS servers**.<br>
+The default is 10 seconds, but my recommendation is 3-5 seconds. Choose and press Apply.
 
 > [!NOTE]
 > You can see that everything works correctly if you press the **Test upstreams** button and get the **Specified DNS servers are working correctly** message.
@@ -588,7 +588,7 @@ Go to **Machines**, find your machine name **tailscale-pi**, press the 3 dots, a
 
 For you to access the home **private_ips**, we need to enable the **Subnet Router** in the same place, mark the box with **your subnet**.
 
-Next, go to **DNS** and under **Nameservers** on **Global nameservers** press **Add nameserver** press **Custom** and add your **Pi tailnet IP** to the Nameserver slot.
+Next, go to **DNS** and under **Nameservers** on **Global nameservers**, press **Add nameserver**, press **Custom**, and add your **Pi tailnet IP** to the Nameserver slot.
 
 This is an easy way to get your **Pi tailnet IP**
 
@@ -596,7 +596,7 @@ This is an easy way to get your **Pi tailnet IP**
 docker exec tailscale tailscale ip -4
 ```
 
-Check also the **Use with exit node** option.
+Also check the **Use with exit node** option.
 
 Next, ensure **Override DNS servers** is **checked**.
 
